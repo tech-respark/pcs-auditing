@@ -1,8 +1,8 @@
-package com.relfor.pcs_audting.controller;
-import com.relfor.pcs_audting.models.ActivityLog;
-import com.relfor.pcs_audting.models.dto.ActivityLogDTO;
-import com.relfor.pcs_audting.models.dto.ActivityLogRequestDTO;
-import com.relfor.pcs_audting.service.ActivityLogService;
+package com.relfor.pcs.auditing.controller;
+import com.relfor.pcs.auditing.models.ActivityLog;
+import com.relfor.pcs.auditing.models.dto.ActivityLogDTO;
+import com.relfor.pcs.auditing.models.dto.ActivityLogRequestDTO;
+import com.relfor.pcs.auditing.service.ActivityLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;

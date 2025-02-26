@@ -1,7 +1,7 @@
-package com.relfor.pcs_audting.service;
+package com.relfor.pcs.auditing.service;
 
-import com.relfor.pcs_audting.models.RequestResponseAudit;
-import com.relfor.pcs_audting.repository.RequestResponseAuditRepository;
+import com.relfor.pcs.auditing.models.RequestResponseAudit;
+import com.relfor.pcs.auditing.repository.RequestResponseAuditRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

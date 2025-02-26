@@ -1,12 +1,11 @@
-package com.relfor.pcs_audting.utility;
+package com.relfor.pcs.auditing.utility;
 
-import com.relfor.pcs_audting.models.ActivityLog;
+import com.relfor.pcs.auditing.models.ActivityLog;
 import org.springframework.data.jpa.domain.Specification;
 import javax.persistence.criteria.*;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class ActivityLogSpecification {
 

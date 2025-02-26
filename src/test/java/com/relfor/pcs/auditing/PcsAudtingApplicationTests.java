@@ -1,4 +1,4 @@
-package com.relfor.pcs_audting;
+package com.relfor.pcs.auditing;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

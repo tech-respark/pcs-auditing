@@ -1,14 +1,12 @@
-package com.relfor.pcs_audting.service;
+package com.relfor.pcs.auditing.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.relfor.pcs_audting.models.ActivityLog;
-import com.relfor.pcs_audting.models.dto.ActivityLogDTO;
-import com.relfor.pcs_audting.repository.ActivityLogRepository;
-import com.relfor.pcs_audting.utility.ActivityLogSpecification;
+import com.relfor.pcs.auditing.models.ActivityLog;
+import com.relfor.pcs.auditing.models.dto.ActivityLogDTO;
+import com.relfor.pcs.auditing.repository.ActivityLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -105,7 +103,6 @@ public class ActivityLogService {
                     activityLog.setGuestName(log.getGuestName());
                     activityLog.setGuestNumber(log.getGuestNumber());
                     activityLog.setInvoiceId(log.getInvoiceId());
-                    activityLog.setRequestStatus(log.getRequestStatus());
                     activityLog.setLoggedInStaffId(log.getLoggedInStaffId());
                     activityLog.setUpdatedField(processUpdatedFields(log.getUpdatedField(),objectMapper));
 

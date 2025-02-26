@@ -1,4 +1,4 @@
-package com.relfor.pcs_audting.utility;
+package com.relfor.pcs.auditing.utility;
 
 import javax.persistence.*;
 import com.fasterxml.jackson.core.JsonProcessingException;

@@ -1,7 +1,7 @@
-package com.relfor.pcs_audting.controller;
+package com.relfor.pcs.auditing.controller;
 
-import com.relfor.pcs_audting.models.RequestResponseAudit;
-import com.relfor.pcs_audting.service.RequestResponseAuditService;
+import com.relfor.pcs.auditing.models.RequestResponseAudit;
+import com.relfor.pcs.auditing.service.RequestResponseAuditService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

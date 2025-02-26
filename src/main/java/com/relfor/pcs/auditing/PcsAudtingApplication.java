@@ -1,4 +1,4 @@
-package com.relfor.pcs_audting;
+package com.relfor.pcs.auditing;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

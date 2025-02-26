@@ -1,62 +1,25 @@
-package com.relfor.pcs_audting.models;
-import javax.persistence.*;
+package com.relfor.pcs.auditing.models.dto;
+
 import java.time.Instant;
 
-@Entity
-@Table(name = "activity_logs")
-public class ActivityLog {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ActivityLogDTO {
+
     private Long id;
-
-    @Column
     private Instant requestTimestamp;
-
-    @Column
     private Long traceId;
-
-    @Column
     private Long tenantId;
-
-    @Column
     private Long storeId;
-
-    @Column
     private Long loggedInStaffId;
-
-    @Column
     private String transactionId;
-
-    @Column(columnDefinition = "MEDIUMTEXT")
     private String action;
-
-    @Column(columnDefinition = "MEDIUMTEXT")
     private String entity;
-
-    @Column(columnDefinition = "MEDIUMTEXT")
     private String details;
-
-    @Column(columnDefinition = "MEDIUMTEXT")
     private String username;
-
-    @Column(columnDefinition = "MEDIUMTEXT")
     private String loggedInStaffName;
-
-    @Column(columnDefinition = "MEDIUMTEXT")
     private String guestName;
-
-    @Column(columnDefinition = "MEDIUMTEXT")
     private String guestNumber;
-
-    @Column(columnDefinition = "MEDIUMTEXT")
     private String invoiceId;
-
-    @Column(columnDefinition = "MEDIUMTEXT")
-    private String requestStatus;
-
-    @Column(columnDefinition = "MEDIUMTEXT")
     private String updatedField;
-
 
     public Long getId() {
         return id;
@@ -178,14 +141,6 @@ public class ActivityLog {
         this.invoiceId = invoiceId;
     }
 
-    public String getRequestStatus() {
-        return requestStatus;
-    }
-
-    public void setRequestStatus(String requestStatus) {
-        this.requestStatus = requestStatus;
-    }
-
     public String getUpdatedField() {
         return updatedField;
     }
@@ -193,4 +148,5 @@ public class ActivityLog {
     public void setUpdatedField(String updatedField) {
         this.updatedField = updatedField;
     }
+
 }

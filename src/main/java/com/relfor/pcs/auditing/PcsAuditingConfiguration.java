@@ -1,4 +1,4 @@
-package com.relfor.pcs_audting;
+package com.relfor.pcs.auditing;
 
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;

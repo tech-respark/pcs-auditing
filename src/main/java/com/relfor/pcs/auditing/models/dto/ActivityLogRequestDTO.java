@@ -1,4 +1,4 @@
-package com.relfor.pcs_audting.models.dto;
+package com.relfor.pcs.auditing.models.dto;
 
 public class ActivityLogRequestDTO {
     private String staffName;

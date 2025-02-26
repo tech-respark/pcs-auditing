@@ -1,6 +1,6 @@
-package com.relfor.pcs_audting.models;
+package com.relfor.pcs.auditing.models;
 
-import com.relfor.pcs_audting.utility.MapToJsonConverter;
+import com.relfor.pcs.auditing.utility.MapToJsonConverter;
 
 import javax.persistence.*;
 import java.time.Instant;
