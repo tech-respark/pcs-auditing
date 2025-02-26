@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.relfor.pcs.auditing.models.ActivityLog;
 import com.relfor.pcs.auditing.models.dto.ActivityLogDTO;
 import com.relfor.pcs.auditing.repository.ActivityLogRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -29,17 +31,18 @@ public class ActivityLogService {
     @PersistenceContext
     private EntityManager entityManager;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public ActivityLog postActivityLog(ActivityLog activityLog) {
         try {
             activityLog = activityLogRepository.save(activityLog);
+            logger.debug("Activity log successfully saved with ID: {}", activityLog.getId());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error saving activity log: {}", activityLog, e);
             throw e;
         }
         return activityLog;
     }
-
 
     public Page<ActivityLogDTO> getActivityLog(String staffName, String entity, Long tenantId, Long storeId,
                                                Instant startTime, Instant endTime, int page, int size) {
@@ -56,7 +59,7 @@ public class ActivityLogService {
         }
 
         if (!"All".equalsIgnoreCase(staffName)) {
-            queryBuilder.append(" AND staff_name LIKE ?");
+            queryBuilder.append(" AND logged_in_staff_name LIKE ?");
             params.add("%" + staffName + "%");
         }
         if (!"All".equalsIgnoreCase(entity)) {
@@ -74,8 +77,14 @@ public class ActivityLogService {
         for (int i = 0; i < params.size(); i++) {
             countQuery.setParameter(i + 1, params.get(i));
         }
-        Long totalElements = ((Number) countQuery.getSingleResult()).longValue();
 
+        long totalElements;
+        try {
+            totalElements = ((Number) countQuery.getSingleResult()).longValue();
+        } catch (Exception e) {
+            logger.error("Error fetching activity log count", e);
+            throw e;
+        }
         queryBuilder.append(" ORDER BY request_timestamp DESC LIMIT ? OFFSET ?");
         params.add(size);
         params.add(page * size);
@@ -85,7 +94,13 @@ public class ActivityLogService {
             dataQuery.setParameter(i + 1, params.get(i));
         }
 
-        List<ActivityLog> logs = dataQuery.getResultList();
+        List<ActivityLog> logs;
+        try {
+            logs = dataQuery.getResultList();
+        } catch (Exception e) {
+            logger.error("Error fetching activity logs", e);
+            throw e;
+        }
 
         List<ActivityLogDTO> processedLogs = logs.stream()
                 .map(log -> {
@@ -155,9 +170,8 @@ public class ActivityLogService {
 
             return objectMapper.writeValueAsString(processedFields);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error processing updated fields JSON: {}", updatedFieldJson, e);
             return "[]";
         }
-
     }
 }
