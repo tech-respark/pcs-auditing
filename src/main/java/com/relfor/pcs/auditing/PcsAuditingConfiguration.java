@@ -21,7 +21,7 @@ public class PcsAuditingConfiguration {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("*").allowedMethods("POST", "PUT", "GET", "DELETE");
+                registry.addMapping("/**").allowedOrigins("*").allowedMethods("POST", "PUT", "GET", "DELETE").allowedHeaders("*");;
                 WebMvcConfigurer.super.addCorsMappings(registry);
             }
         };

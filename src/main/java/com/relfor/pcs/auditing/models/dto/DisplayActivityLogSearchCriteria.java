@@ -1,14 +1,15 @@
 package com.relfor.pcs.auditing.models.dto;
 
-public class ActivityLogRequestDTO {
+public class DisplayActivityLogSearchCriteria {
     private String staffName;
     private String entity;
     private Long tenantId;
     private Long storeId;
-    private String startTime;
-    private String endTime;
+    private String startDate;
+    private String endDate;
     private int page = 0;
     private int size = 10;
+    private String applicationName;
 
     public String getStaffName() { return staffName; }
     public void setStaffName(String staffName) { this.staffName = staffName; }
@@ -22,16 +23,28 @@ public class ActivityLogRequestDTO {
     public Long getStoreId() { return storeId; }
     public void setStoreId(Long storeId) { this.storeId = storeId; }
 
-    public String getStartTime() { return startTime; }
-    public void setStartTime(String startTime) { this.startTime = startTime; }
+    public String getStartDate() {
+        return startDate;
+    }
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
 
-    public String getEndTime() { return endTime; }
-    public void setEndTime(String endTime) { this.endTime = endTime; }
+    public String getEndDate() { return endDate; }
+    public void setEndDate(String endDate) { this.endDate = endDate; }
 
     public int getPage() { return page; }
     public void setPage(int page) { this.page = page; }
 
     public int getSize() { return size; }
     public void setSize(int size) { this.size = size; }
+
+    public String getApplicationName() {
+        return applicationName;
+    }
+
+    public void setApplicationName(String applicationName) {
+        this.applicationName = applicationName;
+    }
 }
 

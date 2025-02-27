@@ -1,6 +1,6 @@
 package com.relfor.pcs.auditing.models;
 
-import com.relfor.pcs.auditing.utility.MapToJsonConverter;
+import com.relfor.pcs.auditing.util.MapToJsonConverter;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -15,7 +15,7 @@ public class RequestResponseAudit {
     private Long id;
 
     @Column
-    private String requestId;
+    private String traceId;
 
     @Column
     private Long tenantId;
@@ -77,17 +77,12 @@ public class RequestResponseAudit {
     private String geolocationLatitude;
     @Column(length = 50)
     private String geolocationLongitude;
-
-    @Column(columnDefinition = "MEDIUMTEXT")
     private String username;
-
-
-    public RequestResponseAudit() {
-    }
+    private String applicationName;
 
     public RequestResponseAudit(Long id, String requestId, Instant requestTimestamp, String clientIp, String userAgent, String requestMethod, String requestUrl, Map<String, Object> requestHeaders, String requestBody, Map<String, Object> queryParameters, Integer responseStatusCode, Map<String, Object> responseHeaders, String responseBody, Long timeTaken, Long userId, String serverUrl, String errorDetails, String stackTrace, String geolocationLatitude, String geolocationLongitude, Map<String, Object> postEntityState) {
         this.id = id;
-        this.requestId = requestId;
+        this.traceId = requestId;
         this.requestTimestamp = requestTimestamp;
         this.clientIp = clientIp;
         this.userAgent = userAgent;
@@ -132,12 +127,12 @@ public class RequestResponseAudit {
         this.id = id;
     }
 
-    public String getRequestId() {
-        return requestId;
+    public String getTraceId() {
+        return traceId;
     }
 
-    public void setRequestId(String requestId) {
-        this.requestId = requestId;
+    public void setTraceId(String traceId) {
+        this.traceId = traceId;
     }
 
     public Instant getRequestTimestamp() {
@@ -296,11 +291,19 @@ public class RequestResponseAudit {
         this.userId = userId;
     }
 
+    public String getApplicationName() {
+        return applicationName;
+    }
+
+    public void setApplicationName(String applicationName) {
+        this.applicationName = applicationName;
+    }
+
     @Override
     public String toString() {
         return "RequestResponseAudit{" +
                 "id=" + id +
-                ", requestId='" + requestId + '\'' +
+                ", traceId='" + traceId + '\'' +
                 ", requestTimestamp=" + requestTimestamp +
                 ", clientIp='" + clientIp + '\'' +
                 ", userAgent='" + userAgent + '\'' +

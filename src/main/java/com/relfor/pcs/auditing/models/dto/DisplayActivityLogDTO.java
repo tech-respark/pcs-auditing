@@ -1,11 +1,11 @@
 package com.relfor.pcs.auditing.models.dto;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
-public class ActivityLogDTO {
+public class DisplayActivityLogDTO {
 
     private Long id;
-    private Instant requestTimestamp;
+    private LocalDateTime requestTimestamp;
     private Long traceId;
     private Long tenantId;
     private Long storeId;
@@ -20,6 +20,7 @@ public class ActivityLogDTO {
     private String guestNumber;
     private String invoiceId;
     private String updatedField;
+    private String applicationName;
 
     public Long getId() {
         return id;
@@ -29,11 +30,11 @@ public class ActivityLogDTO {
         this.id = id;
     }
 
-    public Instant getRequestTimestamp() {
+    public LocalDateTime getRequestTimestamp() {
         return requestTimestamp;
     }
 
-    public void setRequestTimestamp(Instant requestTimestamp) {
+    public void setRequestTimestamp(LocalDateTime requestTimestamp) {
         this.requestTimestamp = requestTimestamp;
     }
 
@@ -149,4 +150,11 @@ public class ActivityLogDTO {
         this.updatedField = updatedField;
     }
 
+    public String getApplicationName() {
+        return applicationName;
+    }
+
+    public void setApplicationName(String applicationName) {
+        this.applicationName = applicationName;
+    }
 }

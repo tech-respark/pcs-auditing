@@ -3,7 +3,7 @@ import javax.persistence.*;
 import java.time.Instant;
 
 @Entity
-@Table(name = "activity_logs")
+@Table(name = "display_activity_logs")
 public class ActivityLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,33 +27,25 @@ public class ActivityLog {
     @Column
     private String transactionId;
 
-    @Column(columnDefinition = "TEXT")
     private String action;
 
-    @Column(columnDefinition = "TEXT")
     private String entity;
 
-    @Column(columnDefinition = "TEXT")
     private String details;
 
-    @Column(columnDefinition = "TEXT")
     private String username;
 
-    @Column(columnDefinition = "TEXT")
     private String loggedInStaffName;
 
-    @Column(columnDefinition = "TEXT")
     private String guestName;
 
-    @Column(columnDefinition = "TEXT")
     private String guestNumber;
 
-    @Column(columnDefinition = "TEXT")
     private String invoiceId;
 
-    @Column(columnDefinition = "TEXT")
     private String updatedField;
 
+    private String applicationName;
 
     public Long getId() {
         return id;
@@ -181,5 +173,13 @@ public class ActivityLog {
 
     public void setUpdatedField(String updatedField) {
         this.updatedField = updatedField;
+    }
+
+    public String getApplicationName() {
+        return applicationName;
+    }
+
+    public void setApplicationName(String applicationName) {
+        this.applicationName = applicationName;
     }
 }

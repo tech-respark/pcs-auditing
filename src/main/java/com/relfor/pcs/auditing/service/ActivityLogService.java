@@ -1,21 +1,26 @@
 package com.relfor.pcs.auditing.service;
 
+import com.devourin.pcs.common.base.STenantStore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.relfor.pcs.auditing.models.ActivityLog;
-import com.relfor.pcs.auditing.models.dto.ActivityLogDTO;
+import com.relfor.pcs.auditing.models.dto.DisplayActivityLogDTO;
 import com.relfor.pcs.auditing.repository.ActivityLogRepository;
+import com.relfor.pcs.auditing.util.APIHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +33,8 @@ public class ActivityLogService {
 
     @Autowired
     ActivityLogRepository activityLogRepository;
+    @Autowired
+    APIHelper apiHelper;
     @PersistenceContext
     private EntityManager entityManager;
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -44,8 +51,8 @@ public class ActivityLogService {
         return activityLog;
     }
 
-    public Page<ActivityLogDTO> getActivityLog(String staffName, String entity, Long tenantId, Long storeId,
-                                               Instant startTime, Instant endTime, int page, int size) {
+    public Page<DisplayActivityLogDTO> getActivityLog(String staffName, String entity, Long tenantId, Long storeId,
+                                                      Instant startTime, Instant endTime, int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("requestTimestamp").descending());
 
@@ -101,12 +108,18 @@ public class ActivityLogService {
             logger.error("Error fetching activity logs", e);
             throw e;
         }
+        String timeZone = "Asia/Kolkata";
+        STenantStore storeData = apiHelper.getTenantStore(tenantId, storeId);
+        if (!ObjectUtils.isEmpty(storeData.getTimeZone())) {
+            timeZone = storeData.getTimeZone();
+        }
+        ZoneId zoneId = ZoneId.of(timeZone);
 
-        List<ActivityLogDTO> processedLogs = logs.stream()
+        List<DisplayActivityLogDTO> processedLogs = logs.stream()
                 .map(log -> {
-                    ActivityLogDTO activityLog = new ActivityLogDTO();
+                    DisplayActivityLogDTO activityLog = new DisplayActivityLogDTO();
                     activityLog.setId(log.getId());
-                    activityLog.setRequestTimestamp(log.getRequestTimestamp());
+                    activityLog.setRequestTimestamp(LocalDateTime.ofInstant(log.getRequestTimestamp(), zoneId));
                     activityLog.setTraceId(log.getTraceId());
                     activityLog.setTenantId(log.getTenantId());
                     activityLog.setStoreId(log.getStoreId());
@@ -163,6 +176,7 @@ public class ActivityLogService {
             fieldMappings.put("mobileNo", "Guest Phone Number");
             fieldMappings.put("gender", "Gender");
             fieldMappings.put("firstName", "Guest Name");
+            fieldMappings.put("familyMembers", "Family Members");
             List<String> processedFields = fields.stream()
                     .filter(fieldMappings::containsKey)
                     .map(fieldMappings::get)

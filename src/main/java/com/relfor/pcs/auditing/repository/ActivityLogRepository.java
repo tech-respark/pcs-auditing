@@ -11,8 +11,4 @@ import java.time.Instant;
 
 @Repository
 public interface ActivityLogRepository extends JpaRepository<ActivityLog, Long> {
-
-    Page<ActivityLog> findByLoggedInStaffNameContainingAndEntityContainingAndTenantIdAndStoreIdAndRequestTimestampBetween(
-            String staffName, String entity, Long tenantId, Long storeId, Instant startTime, Instant endTime, Pageable pageable
-    );
 }
