@@ -52,7 +52,7 @@ public class ActivityLogService {
     }
 
     public Page<DisplayActivityLogDTO> getActivityLog(String staffName, String entity, Long tenantId, Long storeId,
-                                                      Instant startTime, Instant endTime, int page, int size) {
+                                                      Instant startTime, Instant endTime, int page, int size, String applicationName) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("requestTimestamp").descending());
 
@@ -73,6 +73,8 @@ public class ActivityLogService {
             queryBuilder.append(" AND entity LIKE ?");
             params.add("%" + entity + "%");
         }
+        queryBuilder.append(" AND application_name = ?");
+        params.add(applicationName);
 
         queryBuilder.append(" AND request_timestamp BETWEEN ? AND ?");
         params.add(startTime);
@@ -132,6 +134,7 @@ public class ActivityLogService {
                     activityLog.setGuestNumber(log.getGuestNumber());
                     activityLog.setInvoiceId(log.getInvoiceId());
                     activityLog.setLoggedInStaffId(log.getLoggedInStaffId());
+                    activityLog.setApplicationName(log.getApplicationName());
                     activityLog.setUpdatedField(processUpdatedFields(log.getUpdatedField(),objectMapper));
 
                     return activityLog;

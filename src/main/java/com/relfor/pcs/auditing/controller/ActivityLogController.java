@@ -44,7 +44,8 @@ public class ActivityLogController {
                     startInstant,
                     endInstant,
                     displayActivityLogSearchCriteria.getPage(),
-                    displayActivityLogSearchCriteria.getSize()
+                    displayActivityLogSearchCriteria.getSize(),
+                    displayActivityLogSearchCriteria.getApplicationName()
             );
             return ResponseEntity.ok(activityLogs);
         } catch (Exception e) {
