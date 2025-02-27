@@ -80,9 +80,11 @@ public class RequestResponseAudit {
     private String username;
     private String applicationName;
 
-    public RequestResponseAudit(Long id, String requestId, Instant requestTimestamp, String clientIp, String userAgent, String requestMethod, String requestUrl, Map<String, Object> requestHeaders, String requestBody, Map<String, Object> queryParameters, Integer responseStatusCode, Map<String, Object> responseHeaders, String responseBody, Long timeTaken, Long userId, String serverUrl, String errorDetails, String stackTrace, String geolocationLatitude, String geolocationLongitude, Map<String, Object> postEntityState) {
+    public RequestResponseAudit(Long id, String traceId, Long tenantId, Long storeId, Instant requestTimestamp, String clientIp, String userAgent, String requestMethod, String requestUrl, Map<String, Object> requestHeaders, String requestBody, Map<String, Object> queryParameters, Integer responseStatusCode, Map<String, Object> responseHeaders, String responseBody, Long timeTaken, String userId, String serverUrl, String errorDetails, String stackTrace, String geolocationLatitude, String geolocationLongitude, String username, String applicationName) {
         this.id = id;
-        this.traceId = requestId;
+        this.traceId = traceId;
+        this.tenantId = tenantId;
+        this.storeId = storeId;
         this.requestTimestamp = requestTimestamp;
         this.clientIp = clientIp;
         this.userAgent = userAgent;
@@ -95,12 +97,14 @@ public class RequestResponseAudit {
         this.responseHeaders = responseHeaders;
         this.responseBody = responseBody;
         this.timeTaken = timeTaken;
-        this.userId = String.valueOf(userId);
+        this.userId = userId;
         this.serverUrl = serverUrl;
         this.errorDetails = errorDetails;
         this.stackTrace = stackTrace;
         this.geolocationLatitude = geolocationLatitude;
         this.geolocationLongitude = geolocationLongitude;
+        this.username = username;
+        this.applicationName = applicationName;
     }
 
     public String getGeolocationLongitude() {
@@ -304,6 +308,8 @@ public class RequestResponseAudit {
         return "RequestResponseAudit{" +
                 "id=" + id +
                 ", traceId='" + traceId + '\'' +
+                ", tenantId=" + tenantId +
+                ", storeId=" + storeId +
                 ", requestTimestamp=" + requestTimestamp +
                 ", clientIp='" + clientIp + '\'' +
                 ", userAgent='" + userAgent + '\'' +
@@ -316,12 +322,14 @@ public class RequestResponseAudit {
                 ", responseHeaders=" + responseHeaders +
                 ", responseBody='" + responseBody + '\'' +
                 ", timeTaken=" + timeTaken +
-                ", userId=" + userId +
+                ", userId='" + userId + '\'' +
                 ", serverUrl='" + serverUrl + '\'' +
                 ", errorDetails='" + errorDetails + '\'' +
                 ", stackTrace='" + stackTrace + '\'' +
                 ", geolocationLatitude='" + geolocationLatitude + '\'' +
                 ", geolocationLongitude='" + geolocationLongitude + '\'' +
+                ", username='" + username + '\'' +
+                ", applicationName='" + applicationName + '\'' +
                 '}';
     }
 }

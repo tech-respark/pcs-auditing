@@ -56,7 +56,7 @@ public class ActivityLogService {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("requestTimestamp").descending());
 
-        StringBuilder queryBuilder = new StringBuilder("FROM activity_logs WHERE tenant_id = ?");
+        StringBuilder queryBuilder = new StringBuilder("FROM display_activity_logs WHERE tenant_id = ?");
         List<Object> params = new ArrayList<>();
         params.add(tenantId);
 
