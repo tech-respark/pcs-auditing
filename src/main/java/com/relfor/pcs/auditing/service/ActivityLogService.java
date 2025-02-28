@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -29,6 +31,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@EnableAsync
 public class ActivityLogService {
 
     @Autowired
@@ -40,6 +43,7 @@ public class ActivityLogService {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    @Async
     public ActivityLog postActivityLog(ActivityLog activityLog) {
         try {
             activityLog = activityLogRepository.save(activityLog);
