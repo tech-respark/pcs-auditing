@@ -1,0 +1,198 @@
+package com.relfor.pcs.auditing.service;
+
+import com.devourin.pcs.common.base.STenantStore;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.relfor.pcs.auditing.models.ActivityLog;
+import com.relfor.pcs.auditing.models.dto.DisplayActivityLogDTO;
+import com.relfor.pcs.auditing.repository.ActivityLogRepository;
+import com.relfor.pcs.auditing.util.APIHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.transaction.Transactional;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Service
+@Transactional
+@EnableAsync
+public class ActivityLogService {
+
+    @Autowired
+    ActivityLogRepository activityLogRepository;
+    @Autowired
+    APIHelper apiHelper;
+    @PersistenceContext
+    private EntityManager entityManager;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Async
+    public ActivityLog postActivityLog(ActivityLog activityLog) {
+        try {
+            activityLog = activityLogRepository.save(activityLog);
+            logger.debug("Activity log successfully saved with ID: {}", activityLog.getId());
+        } catch (Exception e) {
+            logger.error("Error saving activity log: {}", activityLog, e);
+            throw e;
+        }
+        return activityLog;
+    }
+
+    public Page<DisplayActivityLogDTO> getActivityLog(String staffName, String entity, Long tenantId, Long storeId,
+                                                      Instant startTime, Instant endTime, int page, int size, String applicationName) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("requestTimestamp").descending());
+
+        StringBuilder queryBuilder = new StringBuilder("FROM display_activity_logs WHERE tenant_id = ?");
+        List<Object> params = new ArrayList<>();
+        params.add(tenantId);
+
+        if (storeId != 0) {
+            queryBuilder.append(" AND store_id = ?");
+            params.add(storeId);
+        }
+
+        if (!"All".equalsIgnoreCase(staffName)) {
+            queryBuilder.append(" AND logged_in_staff_name LIKE ?");
+            params.add("%" + staffName + "%");
+        }
+        if (!"All".equalsIgnoreCase(entity)) {
+            queryBuilder.append(" AND entity LIKE ?");
+            params.add("%" + entity + "%");
+        }
+        queryBuilder.append(" AND application_name = ?");
+        params.add(applicationName);
+
+        queryBuilder.append(" AND request_timestamp BETWEEN ? AND ?");
+        params.add(startTime);
+        params.add(endTime);
+
+        // Query to fetch total count
+        String countQueryStr = "SELECT COUNT(*) " + queryBuilder;
+        Query countQuery = entityManager.createNativeQuery(countQueryStr);
+        for (int i = 0; i < params.size(); i++) {
+            countQuery.setParameter(i + 1, params.get(i));
+        }
+
+        long totalElements;
+        try {
+            totalElements = ((Number) countQuery.getSingleResult()).longValue();
+        } catch (Exception e) {
+            logger.error("Error fetching activity log count", e);
+            throw e;
+        }
+        queryBuilder.append(" ORDER BY request_timestamp DESC LIMIT ? OFFSET ?");
+        params.add(size);
+        params.add(page * size);
+
+        Query dataQuery = entityManager.createNativeQuery("SELECT * " + queryBuilder, ActivityLog.class);
+        for (int i = 0; i < params.size(); i++) {
+            dataQuery.setParameter(i + 1, params.get(i));
+        }
+
+        List<ActivityLog> logs;
+        try {
+            logs = dataQuery.getResultList();
+        } catch (Exception e) {
+            logger.error("Error fetching activity logs", e);
+            throw e;
+        }
+        String timeZone = "Asia/Kolkata";
+        STenantStore storeData = apiHelper.getTenantStore(tenantId, storeId);
+        if (!ObjectUtils.isEmpty(storeData.getTimeZone())) {
+            timeZone = storeData.getTimeZone();
+        }
+        ZoneId zoneId = ZoneId.of(timeZone);
+
+        List<DisplayActivityLogDTO> processedLogs = logs.stream()
+                .map(log -> {
+                    DisplayActivityLogDTO activityLog = new DisplayActivityLogDTO();
+                    activityLog.setId(log.getId());
+                    activityLog.setRequestTimestamp(LocalDateTime.ofInstant(log.getRequestTimestamp(), zoneId));
+                    activityLog.setTraceId(log.getTraceId());
+                    activityLog.setTenantId(log.getTenantId());
+                    activityLog.setStoreId(log.getStoreId());
+                    activityLog.setAction(log.getAction());
+                    activityLog.setEntity(log.getEntity());
+                    activityLog.setDetails(log.getDetails());
+                    activityLog.setUsername(log.getUsername());
+                    activityLog.setLoggedInStaffName(log.getLoggedInStaffName());
+                    activityLog.setGuestName(log.getGuestName());
+                    activityLog.setGuestNumber(log.getGuestNumber());
+                    activityLog.setInvoiceId(log.getInvoiceId());
+                    activityLog.setLoggedInStaffId(log.getLoggedInStaffId());
+                    activityLog.setApplicationName(log.getApplicationName());
+                    activityLog.setUpdatedField(processUpdatedFields(log.getUpdatedField(),objectMapper));
+
+                    return activityLog;
+                })
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(processedLogs, pageable, totalElements);
+    }
+
+
+
+    private String processUpdatedFields(String updatedFieldJson, ObjectMapper objectMapper) {
+        if (updatedFieldJson == null || updatedFieldJson.isEmpty()) {
+            return updatedFieldJson;
+        }
+
+        try {
+            List<String> fields = objectMapper.readValue(updatedFieldJson, new TypeReference<List<String>>() {
+            });
+
+            Map<String, String> fieldMappings = new HashMap<>();
+            fieldMappings.put("statuses", "Order Status");
+            fieldMappings.put("payments", "Payment Details");
+            fieldMappings.put("products", "Billing Items");
+            fieldMappings.put("payMode", "Payment Mode");
+            fieldMappings.put("guest", "Guest Name");
+            fieldMappings.put("phone", "Guest Phone Number");
+            fieldMappings.put("total", "Total Amount");
+            fieldMappings.put("orderDay", "Order Date");
+            fieldMappings.put("discount", "Discount Details");
+            fieldMappings.put("couponCode", "Coupon Code Applied");
+            fieldMappings.put("giftCardNo", "Gift Card Used");
+            fieldMappings.put("newSharedMembers", "Members Added");
+            fieldMappings.put("toDate", "Expiry Date");
+            fieldMappings.put("balanceMinutes", "Remaining Minutes");
+            fieldMappings.put("balanceAmount", "Remaining Balance");
+            fieldMappings.put("appointmentDay", "Appointment Date");
+            fieldMappings.put("appointmentTime", "Appointment Time");
+            fieldMappings.put("guestName", "Guest Name");
+            fieldMappings.put("guestMobile", "Guest Phone Number");
+            fieldMappings.put("expertAppointments", "Appointment Items");
+            fieldMappings.put("mobileNo", "Guest Phone Number");
+            fieldMappings.put("gender", "Gender");
+            fieldMappings.put("firstName", "Guest Name");
+            fieldMappings.put("familyMembers", "Family Members");
+            List<String> processedFields = fields.stream()
+                    .filter(fieldMappings::containsKey)
+                    .map(fieldMappings::get)
+                    .collect(Collectors.toList());
+
+            return objectMapper.writeValueAsString(processedFields);
+        } catch (Exception e) {
+            logger.error("Error processing updated fields JSON: {}", updatedFieldJson, e);
+            return "[]";
+        }
+    }
+}
